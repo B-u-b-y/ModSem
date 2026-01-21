@@ -1,0 +1,411 @@
+@prefix : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix dbpedia-owl: <http://dbpedia.org/ontology/> .
+@base <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/> .
+
+<http://www.semanticweb.org/ModSem/SportInvernaliOlimpici> rdf:type owl:Ontology ;
+                                                            dc:creator "Budaes Tanaru Riccardo Gabriele" ,
+                                                                       "Driza Andrea" ;
+                                                            dc:date "2026-01-20"^^xsd:date ;
+                                                            dc:description "Ontologia sugli sport invernali olimpici."@it ;
+                                                            dc:title "Ontologia completa degli sport invernali olimpici"@it ;
+                                                            vann:preferredNamespacePrefix "SIO" ;
+                                                            vann:preferredNamespaceUri "http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/" ;
+                                                            rdfs:label "Ontologia Sport Invernali Olimpici"@it .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/elements/1.1/creator
+dc:creator rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/date
+dc:date rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/description
+dc:description rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/title
+dc:title rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespacePrefix
+vann:preferredNamespacePrefix rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespaceUri
+vann:preferredNamespaceUri rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2002/07/owl#minQualifiedCardinality
+owl:minQualifiedCardinality rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#closeMatch
+skos:closeMatch rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#exactMatch
+skos:exactMatch rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Datatypes
+#################################################################
+
+###  http://www.w3.org/2001/XMLSchema#date
+xsd:date rdf:type rdfs:Datatype .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/appartieneASport
+:appartieneASport rdf:type owl:ObjectProperty ;
+                  rdfs:domain :Gara ;
+                  rdfs:range :Sport .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/garaDi
+:garaDi rdf:type owl:ObjectProperty ;
+        rdfs:domain :Gara ;
+        rdfs:range :Sport .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/haPartecipante
+:haPartecipante rdf:type owl:ObjectProperty ;
+                owl:inverseOf :partecipaAGara ;
+                rdfs:domain :Gara ;
+                rdfs:range :Atleta .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/partecipaAGara
+:partecipaAGara rdf:type owl:ObjectProperty ;
+                rdfs:domain :Atleta ;
+                rdfs:range :Gara .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/partecipaAGaraInLuogo
+:partecipaAGaraInLuogo rdf:type owl:ObjectProperty ;
+                       owl:propertyChainAxiom ( :partecipaAGara
+                                                :siSvolgeIn
+                                              ) .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/praticaSport
+:praticaSport rdf:type owl:ObjectProperty ;
+              rdfs:domain :Atleta ;
+              rdfs:range :Sport ;
+              owl:propertyChainAxiom ( :partecipaAGara
+                                       :garaDi
+                                     ) .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/precedeEdizione
+:precedeEdizione rdf:type owl:ObjectProperty ,
+                          owl:TransitiveProperty .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/siSvolgeIn
+:siSvolgeIn rdf:type owl:ObjectProperty ;
+            rdfs:domain :Gara ;
+            rdfs:range :Luogo .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/vinceMedaglia
+:vinceMedaglia rdf:type owl:ObjectProperty ;
+               rdfs:domain :Atleta ;
+               rdfs:range :TipoMedaglia .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/haData
+:haData rdf:type owl:DatatypeProperty ;
+        rdfs:range xsd:date .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/haEta
+:haEta rdf:type owl:DatatypeProperty ;
+       rdfs:range xsd:integer .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/haNome
+:haNome rdf:type owl:DatatypeProperty ;
+        rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/haPunteggio
+:haPunteggio rdf:type owl:DatatypeProperty ;
+             rdfs:range xsd:float .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Atleta
+:Atleta rdf:type owl:Class ;
+        rdfs:subClassOf :Persona ;
+        skos:closeMatch dbpedia-owl:Athlete .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/AtletaInvernale
+:AtletaInvernale rdf:type owl:Class ;
+                 owl:equivalentClass [ owl:intersectionOf ( :Atleta
+                                                            [ rdf:type owl:Restriction ;
+                                                              owl:onProperty :praticaSport ;
+                                                              owl:someValuesFrom :SportInvernale
+                                                            ]
+                                                          ) ;
+                                       rdf:type owl:Class
+                                     ] ;
+                 rdfs:subClassOf :Atleta .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/AtletaMedagliatoOlimpico
+:AtletaMedagliatoOlimpico rdf:type owl:Class ;
+                          owl:equivalentClass [ owl:intersectionOf ( :AtletaOlimpico
+                                                                     :Medagliato
+                                                                   ) ;
+                                                rdf:type owl:Class
+                                              ] ;
+                          rdfs:label "Atleta Medagliato Olimpico"@it .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/AtletaOlimpico
+:AtletaOlimpico rdf:type owl:Class ;
+                owl:equivalentClass [ owl:intersectionOf ( :Atleta
+                                                           [ rdf:type owl:Restriction ;
+                                                             owl:onProperty :partecipaAGara ;
+                                                             owl:someValuesFrom :GaraOlimpica
+                                                           ]
+                                                         ) ;
+                                      rdf:type owl:Class
+                                    ] ;
+                rdfs:subClassOf :AtletaInvernale .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Biathlon
+:Biathlon rdf:type owl:Class ;
+          rdfs:subClassOf :SportInvernale .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Evento
+:Evento rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Gara
+:Gara rdf:type owl:Class ;
+      rdfs:subClassOf :Evento .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/GaraOlimpica
+:GaraOlimpica rdf:type owl:Class ;
+              rdfs:subClassOf :Gara .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/ImpiantoOlimpico
+:ImpiantoOlimpico rdf:type owl:Class ;
+                  rdfs:subClassOf :ImpiantoSportivo .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/ImpiantoSportivo
+:ImpiantoSportivo rdf:type owl:Class ;
+                  rdfs:subClassOf :Luogo .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Luogo
+:Luogo rdf:type owl:Class ;
+       rdfs:label "Luogo"@it ;
+       skos:closeMatch dbpedia-owl:Place .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Medaglia
+:Medaglia rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Medagliato
+:Medagliato rdf:type owl:Class ;
+            owl:equivalentClass [ owl:intersectionOf ( :Atleta
+                                                       [ rdf:type owl:Restriction ;
+                                                         owl:onProperty :vinceMedaglia ;
+                                                         owl:someValuesFrom :TipoMedaglia
+                                                       ]
+                                                     ) ;
+                                  rdf:type owl:Class
+                                ] ;
+            rdfs:subClassOf :AtletaInvernale .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Pattinaggio
+:Pattinaggio rdf:type owl:Class ;
+             rdfs:subClassOf :SportInvernale .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Persona
+:Persona rdf:type owl:Class ;
+         rdfs:label "Persona"@it ;
+         skos:exactMatch foaf:Person .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Sci
+:Sci rdf:type owl:Class ;
+     rdfs:subClassOf :SportInvernale .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/SciAlpino
+:SciAlpino rdf:type owl:Class ;
+           rdfs:subClassOf :Sci .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/SciDiFondo
+:SciDiFondo rdf:type owl:Class ;
+            rdfs:subClassOf :Sci ;
+            rdfs:label "Sci di Fondo"@it .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Snowboard
+:Snowboard rdf:type owl:Class ;
+           rdfs:subClassOf :SportInvernale .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Sport
+:Sport rdf:type owl:Class ;
+       rdfs:label "Sport"@it .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/SportInvernale
+:SportInvernale rdf:type owl:Class ;
+                rdfs:subClassOf :Sport .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/TipoMedaglia
+:TipoMedaglia rdf:type owl:Class ;
+              owl:equivalentClass [ rdf:type owl:Class ;
+                                    owl:oneOf ( :Argento
+                                                :Bronzo
+                                                :Oro
+                                              )
+                                  ] .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/AnnaVerdi
+:AnnaVerdi rdf:type owl:NamedIndividual ,
+                    :AtletaOlimpico ,
+                    :Medagliato ;
+           :praticaSport :SnowboardSport ;
+           :vinceMedaglia :Argento ,
+                          :Bronzo ;
+           :haEta 23 ;
+           :haNome "Anna Verdi" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Argento
+:Argento rdf:type owl:NamedIndividual ,
+                  :TipoMedaglia .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/BiathlonSport
+:BiathlonSport rdf:type owl:NamedIndividual ,
+                        :SportInvernale ;
+               rdfs:label "Biathlon"@it .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Bronzo
+:Bronzo rdf:type owl:NamedIndividual ,
+                 :TipoMedaglia .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/CarloRusso
+:CarloRusso rdf:type owl:NamedIndividual ,
+                     :AtletaOlimpico ,
+                     :Medagliato ;
+            :praticaSport :SciDiFondoSport ;
+            :vinceMedaglia :Argento ,
+                           :Oro ;
+            :haEta 28 ;
+            :haNome "Carlo Russo" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/GiuliaNeri
+:GiuliaNeri rdf:type owl:NamedIndividual ,
+                     :AtletaOlimpico ;
+            :praticaSport :SnowboardSport ;
+            :vinceMedaglia :Oro ;
+            :haEta 22 ;
+            :haNome "Giulia Neri" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/LucaBianchi
+:LucaBianchi rdf:type owl:NamedIndividual ,
+                      :AtletaOlimpico ;
+             :praticaSport :PattinaggioSport ;
+             :vinceMedaglia :Oro ;
+             :haEta 27 ;
+             :haNome "Luca Bianchi" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/MarioRossi
+:MarioRossi rdf:type owl:NamedIndividual ,
+                     :AtletaOlimpico ,
+                     :Medagliato ;
+            :praticaSport :SciAlpinoSport ;
+            :vinceMedaglia :Bronzo ,
+                           :Oro ;
+            :haEta 25 ;
+            :haNome "Mario Rossi" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Oro
+:Oro rdf:type owl:NamedIndividual ,
+              :TipoMedaglia .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/PattinaggioSport
+:PattinaggioSport rdf:type owl:NamedIndividual ,
+                           :SportInvernale ;
+                  rdfs:label "Pattinaggio"@it .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/SciAlpinoSport
+:SciAlpinoSport rdf:type owl:NamedIndividual ,
+                         :SportInvernale ;
+                rdfs:label "Sci Alpino"@it .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/SciDiFondoSport
+:SciDiFondoSport rdf:type owl:NamedIndividual ,
+                          :SportInvernale ;
+                 rdfs:label "Sci di Fondo"@it .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/SnowboardSport
+:SnowboardSport rdf:type owl:NamedIndividual ,
+                         :SportInvernale ;
+                rdfs:label "Snowboard"@it .
+
+
+[ owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger
+] .
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi
