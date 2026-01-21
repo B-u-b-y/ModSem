@@ -1,0 +1,188 @@
+PRIMA QUERY
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?nomeAtleta ?nomeSport
+WHERE {
+   ?atleta :haNome ?nomeAtleta ;
+           :praticaSport ?sport .
+   ?sport rdfs:label ?nomeSport .
+   FILTER (LANG(?nomeSport) = "it")
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+SECONDA QUERY
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+
+SELECT ?nomeAtleta (COUNT(?medaglia) AS ?numeroMedaglie)
+WHERE {
+    ?atleta :haNome ?nomeAtleta ;
+            :vinceMedaglia ?medaglia .
+}
+GROUP BY ?nomeAtleta
+ORDER BY DESC(?numeroMedaglie)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+TERZA QUERY
+
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+
+SELECT DISTINCT ?nomeAtleta
+WHERE {
+    ?atleta :vinceMedaglia :Oro ;
+            :haNome ?nomeAtleta .
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+QUARTA QUERY
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+
+SELECT ?nomeAtleta ?eta
+WHERE {
+    ?atleta :haNome ?nomeAtleta ;
+            :haEta ?eta .
+    FILTER (?eta < 30)
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+QUINTA QUERY
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?atleta
+WHERE {
+    ?atleta rdf:type :AtletaInvernale .
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+SESTA QUERY
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+
+SELECT ?prop ?val
+WHERE {
+    :JohannesStrolz ?prop ?val .
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+SETTINA QUERY 
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?nomeAtleta ?abstract ?foto
+WHERE {
+    ?atleta :haNome ?nomeAtleta .
+    FILTER (REGEX(?nomeAtleta, "Nathan Chen", "i"))
+
+    SERVICE <http://dbpedia.org/sparql> {
+        ?resDBpedia rdfs:label ?label .
+        
+        FILTER (STR(?label) = ?nomeAtleta)
+        FILTER (LANG(?label) = "en")
+
+        OPTIONAL { 
+            ?resDBpedia dbo:abstract ?abstract .
+            FILTER (LANG(?abstract) = "it")
+        }
+
+        OPTIONAL { 
+            ?resDBpedia dbo:thumbnail ?foto .
+        }
+    }
+}
+
+
+Settima query DBPEDIA 
+
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?nomeAtleta ?abstract ?foto
+WHERE {
+    VALUES ?nomeAtleta { "Nathan Chen"@en }
+
+    ?resDBpedia rdfs:label ?nomeAtleta .
+    
+    OPTIONAL { 
+        ?resDBpedia dbo:abstract ?abstract .
+        FILTER (LANG(?abstract) = "it")
+    }
+
+    OPTIONAL { 
+        ?resDBpedia dbo:thumbnail ?foto .
+    }
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+OTTAVA QUERY
+
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?luogoNome ?coord
+WHERE {
+    BIND("Cortina d'Ampezzo" AS ?luogoNome) 
+    
+    SERVICE <https://query.wikidata.org/sparql> {
+        ?luogoWiki rdfs:label ?label ;
+                   wdt:P625 ?coord . # P625 = Coordinate geografiche
+    
+        FILTER (LANG(?label) = "it")
+        FILTER (STR(?label) = ?luogoNome)
+    }
+}
+
+WIKIDATA QUERY
+
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?luogo ?coord
+WHERE {
+    VALUES ?luogo { "Cortina d'Ampezzo"@it }
+
+    ?entity rdfs:label ?luogo ;
+            wdt:P625 ?coord .
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+NONA QUERY 
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?sport ?label
+WHERE {
+    ?sport rdf:type :SportInvernale ;
+           rdfs:label ?label .
+    FILTER (LANG(?label) = "it")
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+DECIMA QUERY 
+
+PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+
+SELECT ?nomeAtleta ?eta
+WHERE {
+    ?atleta :haNome ?nomeAtleta ;
+            :haEta ?eta .
+}
+ORDER BY ASC(?eta)
