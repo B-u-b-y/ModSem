@@ -309,17 +309,6 @@ xsd:date rdf:type rdfs:Datatype .
 #    Individuals
 #################################################################
 
-###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/AnnaVerdi
-:AnnaVerdi rdf:type owl:NamedIndividual ,
-                    :AtletaOlimpico ,
-                    :Medagliato ;
-           :praticaSport :SnowboardSport ;
-           :vinceMedaglia :Argento ,
-                          :Bronzo ;
-           :haEta 23 ;
-           :haNome "Anna Verdi" .
-
-
 ###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Argento
 :Argento rdf:type owl:NamedIndividual ,
                   :TipoMedaglia .
@@ -336,44 +325,32 @@ xsd:date rdf:type rdfs:Datatype .
                  :TipoMedaglia .
 
 
-###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/CarloRusso
-:CarloRusso rdf:type owl:NamedIndividual ,
-                     :AtletaOlimpico ,
-                     :Medagliato ;
-            :praticaSport :SciDiFondoSport ;
-            :vinceMedaglia :Argento ,
-                           :Oro ;
-            :haEta 28 ;
-            :haNome "Carlo Russo" .
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/JohannesStrolz
+:JohannesStrolz rdf:type owl:NamedIndividual ,
+                         :AtletaOlimpico ,
+                         :Medagliato ;
+                :praticaSport :SciAlpinoSport ;
+                :vinceMedaglia :Oro ;
+                :haEta 34 ;
+                :haNome "Johannes Strolz" .
 
 
-###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/GiuliaNeri
-:GiuliaNeri rdf:type owl:NamedIndividual ,
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/LindseyJacobelli
+:LindseyJacobelli rdf:type owl:NamedIndividual ,
+                           :AtletaOlimpico ;
+                  :praticaSport :SnowboardSport ;
+                  :vinceMedaglia :Oro ;
+                  :haEta 41 ;
+                  :haNome "Lindsey Jacobelli" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/NathanChen
+:NathanChen rdf:type owl:NamedIndividual ,
                      :AtletaOlimpico ;
-            :praticaSport :SnowboardSport ;
+            :praticaSport :PattinaggioSport ;
             :vinceMedaglia :Oro ;
-            :haEta 22 ;
-            :haNome "Giulia Neri" .
-
-
-###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/LucaBianchi
-:LucaBianchi rdf:type owl:NamedIndividual ,
-                      :AtletaOlimpico ;
-             :praticaSport :PattinaggioSport ;
-             :vinceMedaglia :Oro ;
-             :haEta 27 ;
-             :haNome "Luca Bianchi" .
-
-
-###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/MarioRossi
-:MarioRossi rdf:type owl:NamedIndividual ,
-                     :AtletaOlimpico ,
-                     :Medagliato ;
-            :praticaSport :SciAlpinoSport ;
-            :vinceMedaglia :Bronzo ,
-                           :Oro ;
-            :haEta 25 ;
-            :haNome "Mario Rossi" .
+            :haEta 27 ;
+            :haNome "Nathan Chen" .
 
 
 ###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/Oro
@@ -403,6 +380,28 @@ xsd:date rdf:type rdfs:Datatype .
 :SnowboardSport rdf:type owl:NamedIndividual ,
                          :SportInvernale ;
                 rdfs:label "Snowboard"@it .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/VictoriaCarl
+:VictoriaCarl rdf:type owl:NamedIndividual ,
+                       :AtletaOlimpico ,
+                       :Medagliato ;
+              :praticaSport :SciDiFondoSport ;
+              :vinceMedaglia :Argento ,
+                             :Oro ;
+              :haEta 31 ;
+              :haNome "Victoria Carl" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/YimingSu
+:YimingSu rdf:type owl:NamedIndividual ,
+                   :AtletaOlimpico ,
+                   :Medagliato ;
+          :praticaSport :SnowboardSport ;
+          :vinceMedaglia :Argento ,
+                         :Oro ;
+          :haEta 22 ;
+          :haNome "Yiming Su" .
 
 
 [ owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger
