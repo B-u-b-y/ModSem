@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Olimpiadi Invernali</title>
+</head>
+    <body>
+
+    <h1>🏔️ Olimpiadi Invernali</h1>
+
+    <div class="search-container">
+        <label>Nome atleta:</label>
+        <input type="text" id="name" placeholder="Inserisci il nome...">
+
+        <label>Sport:</label>
+        <select id="sport">
+            <option value="Tutti">Tutti gli sport</option>
+            <option value="Sci Alpino">Sci Alpino</option>
+            <option value="Biathlon">Biathlon</option>
+            <option value="Snowboard">Snowboard</option>
+            <option value="Pattinaggio">Pattinaggio</option>
+            <option value="Sci di Fondo">Sci di Fondo</option>
+        </select>
+
+        <button onclick="searchAthletes()">🔍 Cerca</button>
+        <button onclick="resetSearch()">🗑️ Svuota</button>
+    </div>
+
+    <h2>📊 Risultati Ricerca</h2>
+
+    <table id="athletesTable">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Sport</th>
+                <th>Età</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>➕ Aggiungi Nuovo Atleta</h2>
+
+    <div class="search-container">
+        <label>Nome completo:</label>
+        <input type="text" id="newName" placeholder="Es. Sofia Goggia">
+
+        <label>Sport:</label>
+        <select id="newSport">
+            <option value="Sci Alpino">Sci Alpino</option>
+            <option value="Biathlon">Biathlon</option>
+            <option value="Snowboard">Snowboard</option>
+            <option value="Pattinaggio">Pattinaggio</option>
+            <option value="Sci di Fondo">Sci di Fondo</option>
+        </select>
+
+        <label>Età:</label>
+        <input type="number" id="newAge" min="15" max="60" placeholder="Es. 28">
+
+        <label>Medaglia:</label>
+        <select id="newMedal">
+            <option value="Oro">Oro</option>
+            <option value="Argento">Argento</option>
+            <option value="Bronzo">Bronzo</option>
+        </select>
+
+        <button onclick="addNewAthlete()">💾 Aggiungi Atleta</button>
+    </div>
+
+    <div id="insertMessage" style="margin-top: 10px; padding: 10px; border-radius: 4px; display: none;"></div>
+
+    <h2>ℹ️ Dettagli Atleta da DBPEDIA</h2>
+
+    <div id="dbpedia-container" style="border: 2px solid #ddd; padding: 20px; border-radius: 10px; background-color: #fafafa;">
+        <div id="spinner"></div>
+        <div id="dbpedia-content" style="display: none;">
+            <img id="foto" alt="Foto atleta" style="max-width: 200px; border-radius: 8px; margin-bottom: 15px; display: block;">
+            <div id="fullName" style="margin-bottom: 8px;"></div>
+            <div id="birthDate" style="margin-bottom: 8px;"></div>
+            <div id="birthPlace" style="margin-bottom: 8px;"></div>
+            <div id="height" style="margin-bottom: 8px;"></div>
+        </div>
+        <div id="dbpedia-message">Seleziona un atleta per vedere i dettagli.</div>
+    </div>
+
+    <script>
+
+    let currentFoto = null;
+
+    function resetSearch() {
+        // Pulisce i campi di input
+        document.getElementById("name").value = "";
+        document.getElementById("sport").value = "Tutti";
+        
+        // Svuota la tabella dei risultati
+        document.querySelector("#athletesTable tbody").innerHTML = "";
+        document.getElementById("desc").innerText = "Seleziona un atleta per vedere i dettagli.";
+        hideFoto();
+        
+        // Avvia ricerca generica su tutti gli sport
+        searchAthletes();
+    }
+
+    function searchAthletes() {
+        const name = document.getElementById("name").value;
+        const sport = document.getElementById("sport").value;
+
+        // Costruisce la query string con encoding URL-safe
+        fetch(`http://127.0.0.1:5000/api/athletes?name=${encodeURIComponent(name)}&sport=${encodeURIComponent(sport)}`)
+            .then(res => res.json())  // Parse della risposta JSON
+            .then(data => {
+                const tbody = document.querySelector("#athletesTable tbody");
+                tbody.innerHTML = "";  // Pulisce risultati precedenti
+
+                // Se nessun atleta trovato, mostra messaggio
+                if (data.length === 0) {
+                    document.getElementById("desc").innerText = "Nessun atleta trovato.";
+                    hideFoto();
+                    return;
+                }
+
+                // Itera sui risultati e crea le righe della tabella
+                data.forEach((a, index) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${a.nome}</td>
+                        <td>${a.sport}</td>
+                        <td>${a.eta}</td>
+                    `;
+                    // Aggiunge evento click per caricare DBpedia quando si clicca sulla riga
+                    row.onclick = () => loadDbpedia(a.nome);
+                    tbody.appendChild(row);
+
+                    // Carica automaticamente DBpedia per il primo risultato
+                    if (index === 0) {
+                        loadDbpedia(a.nome);
+                    }
+                });
+            })
+            .catch(err => {
+                // Gestisce errori di rete o backend non disponibile
+                console.error(err);
+                document.getElementById("desc").innerText = "Errore di connessione al backend.";
+                hideFoto();
+            });
+    }
+
+    function addNewAthlete() {
+        // Recupera i valori dai campi del form
+        const nome = document.getElementById("newName").value;
+        const sport = document.getElementById("newSport").value;
+        const eta = document.getElementById("newAge").value;
+        const medaglia = document.getElementById("newMedal").value;
+
+        // Validazione client-side: verifica campi obbligatori
+        if (!nome || !eta) {
+            showMessage("Compila tutti i campi obbligatori (Nome e Età)", "error");
+            return;
+        }
+
+        // Costruisce il payload JSON per la richiesta POST
+        const data = {
+            nome: nome,
+            sport: sport,
+            eta: parseInt(eta),  // Converte stringa in intero
+            medaglia: medaglia
+        };
+
+        // Esegue chiamata POST al backend con header JSON
+        fetch("http://127.0.0.1:5000/api/athletes", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"  // Specifica che il body è JSON
+            },
+            body: JSON.stringify(data)  // Serializza l'oggetto in stringa JSON
+        })
+        .then(res => res.json())  // Parse della risposta
+        .then(response => {
+            if (response.success) {
+                // Successo: mostra messaggio verde e resetta il form
+                showMessage(`✅ ${response.message}`, "success");
+                
+                // Reset campi del form
+                document.getElementById("newName").value = "";
+                document.getElementById("newAge").value = "";
+                
+                // Ricarica la lista atleti per mostrare il nuovo inserimento
+                searchAthletes();
+            } else {
+                // Errore dal backend: mostra messaggio rosso
+                showMessage(`❌ ${response.error}`, "error");
+            }
+        })
+        .catch(err => {
+            // Errore di rete o backend non raggiungibile
+            console.error(err);
+            showMessage("❌ Errore di connessione al server", "error");
+        });
+    }
+
+    function showMessage(text, type) {
+        const msgDiv = document.getElementById("insertMessage");
+        msgDiv.innerText = text;
+        msgDiv.style.display = "block";
+        
+        // Stile condizionale basato sul tipo di messaggio
+        msgDiv.style.backgroundColor = type === "success" ? "#d4edda" : "#f8d7da";
+        msgDiv.style.color = type === "success" ? "#155724" : "#721c24";
+        msgDiv.style.border = type === "success" ? "1px solid #c3e6cb" : "1px solid #f5c6cb";
+
+        // Auto-nasconde il messaggio dopo 5 secondi
+        setTimeout(() => {
+            msgDiv.style.display = "none";
+        }, 5000);
+    }
+
+    function loadDbpedia(name) {
+        // === STEP 1: Mostra spinner durante il caricamento ===
+        document.getElementById("spinner").style.display = "block";
+        document.getElementById("dbpedia-content").style.display = "none";
+        document.getElementById("dbpedia-message").innerText = "Caricamento in corso...";
+        document.getElementById("dbpedia-message").style.display = "block";
+
+        // === STEP 2: Chiama l'endpoint backend che interroga DBpedia ===
+        fetch(`http://127.0.0.1:5000/api/dbpedia?athlete=${encodeURIComponent(name)}`)
+            .then(res => res.json())
+            .then(data => {
+                // === STEP 3: Nascondi spinner e messaggio di caricamento ===
+                document.getElementById("spinner").style.display = "none";
+                document.getElementById("dbpedia-message").style.display = "none";
+                document.getElementById("dbpedia-content").style.display = "block";
+                console.log(data);  // Debug: mostra dati in console
+                
+                // === STEP 4: Mostra foto se disponibile ===
+                const fotoImg = document.getElementById("foto");
+                if (data.foto) {
+                    fotoImg.src = data.foto;  // Imposta URL immagine
+                    fotoImg.style.display = "block";
+                } else {
+                    fotoImg.style.display = "none";  // Nasconde se non disponibile
+                }
+
+                // === STEP 5: Mostra nome completo ===
+                if (data.fullName) {
+                    document.getElementById("fullName").innerHTML = 
+                        `<strong>👤 Nome completo:</strong> ${data.fullName}`;
+                } else {
+                    // Fallback: usa il nome cercato se DBpedia non ha foaf:name
+                    document.getElementById("fullName").innerHTML = 
+                        `<strong>👤 Nome completo:</strong> ${name}`;
+                }
+
+                // === STEP 6: Mostra data di nascita formattata ===
+                if (data.birthDate) {
+                    // Converte ISO date in formato italiano leggibile
+                    const date = new Date(data.birthDate);
+                    const formattedDate = date.toLocaleDateString('it-IT', { 
+                        year: 'numeric', month: 'long', day: 'numeric' 
+                    });
+                    document.getElementById("birthDate").innerHTML = 
+                        `<strong>📅 Data di nascita:</strong> ${formattedDate}`;
+                } else {
+                    document.getElementById("birthDate").innerHTML = "";  // Nasconde se assente
+                }
+
+                // === STEP 7: Mostra luogo di nascita ===
+                if (data.birthPlace) {
+                    // Estrae solo il nome del luogo dall'URI DBpedia
+                    const place = data.birthPlace.split('/').pop().replace(/_/g, ' ');
+                    document.getElementById("birthPlace").innerHTML = 
+                        `<strong>📍 Luogo di nascita:</strong> ${place}`;
+                } else {
+                    document.getElementById("birthPlace").innerHTML = "";
+                }
+
+                // === STEP 8: Mostra altezza ===
+                if (data.height) {
+                    // Formatta altezza con 2 decimali
+                    const heightM = parseFloat(data.height).toFixed(2);
+                    document.getElementById("height").innerHTML = 
+                        `<strong>📏 Altezza:</strong> ${heightM} m`;
+                } else {
+                    document.getElementById("height").innerHTML = "";
+                }
+            })
+            .catch(err => {
+                // === Gestione errori di rete o timeout DBpedia ===
+                console.error(err);
+                document.getElementById("spinner").style.display = "none";
+                document.getElementById("dbpedia-content").style.display = "none";
+                document.getElementById("dbpedia-message").innerText = "Errore nel recupero dati DBpedia.";
+                document.getElementById("dbpedia-message").style.display = "block";
+                document.getElementById("height").innerText = "";
+                hideFoto();
+            });
+    }
+                    
+    /**
+     * Mostra la foto dell'atleta impostando l'URL sull'elemento <img>
+     * @param {string} url - URL dell'immagine da visualizzare
+     */
+    function showFoto(url) {
+        const img = document.getElementById("foto");
+        currentFoto = url;  // Salva in variabile globale
+        img.src = url;      // Imposta l'attributo src
+        img.style.display = "block";  // Rende visibile l'immagine
+    }
+
+    /**
+     * Nasconde la foto dell'atleta e resetta lo stato
+     */
+    function hideFoto() {
+        const img = document.getElementById("foto");
+        currentFoto = null;  // Pulisce variabile globale
+        img.src = "";        // Rimuove URL
+        img.style.display = "none";  // Nasconde elemento
+    }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 25px;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        h1 {
+            color: #222;
+            margin-bottom: 25px;
+            font-size: 2em;
+            text-align: center;
+            border-bottom: 3px solid #333;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #222;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        .search-container {
+            background: white;
+            padding: 18px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            padding: 12px 14px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            font-size: 0.9em;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #333;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: background 0.2s;
+            margin-right: 5px;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        button:active {
+            background: #222;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #333;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        tbody tr {
+            transition: background-color 0.15s;
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        #desc {
+            width: 100%;
+            height: 180px;
+            border: 1px solid #ddd;
+            padding: 12px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 4px;
+            margin-top: 8px;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        #desc::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #desc::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        #desc::-webkit-scrollbar-thumb {
+            background: #999;
+            border-radius: 3px;
+        }
+
+        #desc::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        #foto {
+            max-width: 100%;
+            max-height: 250px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            display: none;
+            border-radius: 4px;
+            background: white;
+            padding: 4px;
+        }
+
+        #spinner {
+            width: 35px;
+            height: 35px;
+            margin-top: 12px;
+            border: 3px solid #e8e8e8;
+            border-top: 3px solid #333;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            select,
+            button {
+                width: 100%;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
+    </body>
+</html>

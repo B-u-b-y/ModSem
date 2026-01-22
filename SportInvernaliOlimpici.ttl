@@ -404,6 +404,46 @@ xsd:date rdf:type rdfs:Datatype .
           :haNome "Yiming Su" .
 
 
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/MarcelHirscher
+:MarcelHirscher rdf:type owl:NamedIndividual ,
+                         :AtletaOlimpico ,
+                         :Medagliato ;
+                :praticaSport :SciAlpinoSport ;
+                :vinceMedaglia :Oro ;
+                :haEta 35 ;
+                :haNome "Marcel Hirscher" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/FedericaBrignone
+:FedericaBrignone rdf:type owl:NamedIndividual ,
+                          :AtletaOlimpico ,
+                          :Medagliato ;
+                 :praticaSport :SciAlpinoSport ;
+                 :vinceMedaglia :Oro ;
+                 :haEta 32 ;
+                 :haNome "Federica Brignone" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/AnjaParson
+:AnjaParson rdf:type owl:NamedIndividual ,
+                     :AtletaOlimpico ,
+                     :Medagliato ;
+            :praticaSport :SciAlpinoSport ;
+            :vinceMedaglia :Oro ;
+            :haEta 45 ;
+            :haNome "Anja Pärson" .
+
+
+###  http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/TedLigety
+:TedLigety rdf:type owl:NamedIndividual ,
+                    :AtletaOlimpico ,
+                    :Medagliato ;
+           :praticaSport :SciAlpinoSport ;
+           :vinceMedaglia :Oro ;
+           :haEta 40 ;
+           :haNome "Ted Ligety" .
+
+
 [ owl:minQualifiedCardinality "2"^^xsd:nonNegativeInteger
 ] .
 
