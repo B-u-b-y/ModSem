@@ -166,5 +166,15 @@ def get_coords():
     
     return jsonify({"coords": coords})
 
+
+@app.route('/api/locations', methods=['GET'])
+def get_locations_api():
+    try:
+        locations = backend.get_locations()
+        return jsonify(locations)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

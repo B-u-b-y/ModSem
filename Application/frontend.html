@@ -104,18 +104,24 @@
 
     <h2>🌍 Mappe Olimpiche (Wikidata)</h2>
     
-    <div class="search-container">
-        <p style="width: 100%; margin-bottom: 10px;">Visualizza la posizione degli impianti olimpici su Google Maps:</p>
+    <div class="search-container" style="flex-direction: column; align-items: flex-start;">
+        <p style="margin-bottom: 15px;">
+            Luoghi caricati dinamicamente dall'Ontologia. Clicca per vedere la mappa:
+        </p>
         
-        <button onclick="openMap('Cortina d\'Ampezzo')" style="background-color: #28a745;"> Cortina d'Ampezzo</button>
-        <button onclick="openMap('Milano')" style="background-color: #17a2b8;"> Milano</button>
-        <button onclick="openMap('Bormio')" style="background-color: #ffc107; color: black;"> Bormio</button>
-        <button onclick="openMap('Beijing')" style="background-color: #dc3545;"> Pechino 2022</button>
+        <div id="locationsContainer" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <span style="color: gray;">Caricamento luoghi dal grafo...</span>
+        </div>
     </div>
 
     <script>
 
     let currentFoto = null;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Carica le location per le mappe
+        loadLocations();
+    });
 
     function resetSearch() {
         // Pulisce i campi di input
@@ -306,6 +312,47 @@
             });
     }
  
+    function loadLocations() {
+        const container = document.getElementById("locationsContainer");
+        
+        fetch('http://127.0.0.1:5000/api/locations')
+            .then(res => res.json())
+            .then(locations => {
+                container.innerHTML = ""; 
+
+                if (locations.length === 0) {
+                    container.innerHTML = "Nessun luogo trovato nel grafo.";
+                    return;
+                }
+
+                locations.forEach(locName => {
+                    // Crea il bottone
+                    const btn = document.createElement("button");
+                    btn.innerHTML = ` ${locName}`;
+                    btn.className = "btn-map"; // Classe per stile 
+                    
+                    // Stile dinamico per renderli carini
+                    btn.style.backgroundColor = getRandomColor(); 
+                    btn.style.color = "white";
+                    btn.style.border = "none";
+                    btn.style.padding = "10px 15px";
+                    btn.style.borderRadius = "5px";
+                    btn.style.cursor = "pointer";
+                    btn.style.fontWeight = "bold";
+                    btn.style.marginRight = "10px";
+                    btn.style.marginBottom = "10px";
+
+                    btn.onclick = () => openMap(locName);
+                    container.appendChild(btn);
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                container.innerHTML = "Errore nel caricamento luoghi.";
+            });
+    }
+
+
     function showMessage(text, type) {
         const msgDiv = document.getElementById("insertMessage");
         msgDiv.innerText = text;

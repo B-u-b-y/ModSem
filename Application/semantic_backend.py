@@ -337,3 +337,26 @@ class SemanticBackend:
             print(f"Errore Wikidata: {e}")
         
         return None  # Nessuna coordinata trovata
+
+    def get_locations(self):
+        """
+        Recupera dinamicamente la lista dei luoghi (Impianti) presenti nell'ontologia.
+        """
+        query = """
+        PREFIX sio: <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        
+        SELECT DISTINCT ?luogoLabel
+        WHERE {
+            # Trova tutte le gare che si svolgono in un luogo
+            ?gara a sio:GaraOlimpica ;
+                  sio:siSvolgeIn ?luogo .
+            
+            # Prendi il nome (label) del luogo
+            ?luogo rdfs:label ?luogoLabel .
+        }
+        ORDER BY ?luogoLabel
+        """
+        results = self.g.query(query)
+        
+        return [str(row.luogoLabel) for row in results]

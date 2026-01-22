@@ -136,7 +136,7 @@ vann:preferredNamespaceUri a owl:AnnotationProperty .
         owl:NamedIndividual ;
     :haEta 40 ;
     :haNome "Ted Ligety" ;
-    :praticaSport :SciAlpinoSport ;
+    :praticaSport :SciAlpinoSport ; 
     :vinceMedaglia :Oro .
 
 :VictoriaCarl a :AtletaOlimpico,
