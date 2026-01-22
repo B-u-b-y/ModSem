@@ -6,7 +6,7 @@
 </head>
     <body>
 
-    <h1>🏔️ Olimpiadi Invernali</h1>
+    <h1> Olimpiadi Invernali</h1>
 
     <div class="search-container">
         <label>Nome atleta:</label>
@@ -26,7 +26,7 @@
         <button onclick="resetSearch()">🗑️ Svuota</button>
     </div>
 
-    <h2>📊 Risultati Ricerca</h2>
+    <h2> Risultati Ricerca</h2>
 
     <table id="athletesTable">
         <thead>
@@ -69,6 +69,8 @@
 
     <div id="insertMessage" style="margin-top: 10px; padding: 10px; border-radius: 4px; display: none;"></div>
 
+    
+
     <h2>ℹ️ Dettagli Atleta da DBPEDIA</h2>
 
     <div id="dbpedia-container" style="border: 2px solid #ddd; padding: 20px; border-radius: 10px; background-color: #fafafa;">
@@ -80,7 +82,35 @@
             <div id="birthPlace" style="margin-bottom: 8px;"></div>
             <div id="height" style="margin-bottom: 8px;"></div>
         </div>
-        <div id="dbpedia-message">Seleziona un atleta per vedere i dettagli.</div>
+        <div id="dbpedia-message">Seleziona un atleta dalla ricerca per vedere i dettagli.</div>
+    </div>
+
+    <h2>🏆 Classifica Medaglie</h2>
+    
+    <div class="search-container">
+        <button onclick="loadMedalStats()" style="width: 100%; background-color: #007bff;">📊 Carica/Aggiorna Classifica</button>
+    </div>
+
+    <table id="medalsTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>Posizione</th>
+                <th>Atleta</th>
+                <th style="text-align: center;">Numero Medaglie</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>🌍 Mappe Olimpiche (Wikidata)</h2>
+    
+    <div class="search-container">
+        <p style="width: 100%; margin-bottom: 10px;">Visualizza la posizione degli impianti olimpici su Google Maps:</p>
+        
+        <button onclick="openMap('Cortina d\'Ampezzo')" style="background-color: #28a745;"> Cortina d'Ampezzo</button>
+        <button onclick="openMap('Milano')" style="background-color: #17a2b8;"> Milano</button>
+        <button onclick="openMap('Bormio')" style="background-color: #ffc107; color: black;"> Bormio</button>
+        <button onclick="openMap('Beijing')" style="background-color: #dc3545;"> Pechino 2022</button>
     </div>
 
     <script>
@@ -94,7 +124,8 @@
         
         // Svuota la tabella dei risultati
         document.querySelector("#athletesTable tbody").innerHTML = "";
-        document.getElementById("desc").innerText = "Seleziona un atleta per vedere i dettagli.";
+        document.getElementById("dbpedia-message").innerText = "Seleziona un atleta per vedere i dettagli.";
+        document.getElementById("dbpedia-content").style.display = "none";
         hideFoto();
         
         // Avvia ricerca generica su tutti gli sport
@@ -114,7 +145,7 @@
 
                 // Se nessun atleta trovato, mostra messaggio
                 if (data.length === 0) {
-                    document.getElementById("desc").innerText = "Nessun atleta trovato.";
+                    document.getElementById("dbpedia-message").innerText = "Nessun atleta trovato.";
                     hideFoto();
                     return;
                 }
@@ -140,7 +171,7 @@
             .catch(err => {
                 // Gestisce errori di rete o backend non disponibile
                 console.error(err);
-                document.getElementById("desc").innerText = "Errore di connessione al backend.";
+                document.getElementById("dbpedia-message").innerText = "Errore di connessione al backend.";
                 hideFoto();
             });
     }
@@ -178,7 +209,7 @@
         .then(response => {
             if (response.success) {
                 // Successo: mostra messaggio verde e resetta il form
-                showMessage(`✅ ${response.message}`, "success");
+                showMessage(` ${response.message}`, "success");
                 
                 // Reset campi del form
                 document.getElementById("newName").value = "";
@@ -186,18 +217,95 @@
                 
                 // Ricarica la lista atleti per mostrare il nuovo inserimento
                 searchAthletes();
+                // Ricarica anche le statistiche se la tabella è visibile
+                if(document.getElementById("medalsTable").style.display !== "none") {
+                    loadMedalStats();
+                }
             } else {
                 // Errore dal backend: mostra messaggio rosso
-                showMessage(`❌ ${response.error}`, "error");
+                showMessage(` ${response.error}`, "error");
             }
         })
         .catch(err => {
             // Errore di rete o backend non raggiungibile
             console.error(err);
-            showMessage("❌ Errore di connessione al server", "error");
+            showMessage(" Errore di connessione al server", "error");
         });
     }
 
+    // --- FUNZIONE PER LE STATISTICHE ---
+    function loadMedalStats() {
+        const table = document.getElementById("medalsTable");
+        const tbody = document.querySelector("#medalsTable tbody");
+        
+        // Mostra la tabella e mette un loading
+        table.style.display = "table";
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Caricamento...</td></tr>';
+
+        fetch("http://127.0.0.1:5000/api/medals")
+            .then(res => res.json())
+            .then(data => {
+                tbody.innerHTML = ""; // Pulisce il loading
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Nessun dato disponibile.</td></tr>';
+                    return;
+                }
+
+                data.forEach((item, index) => {
+                    const tr = document.createElement("tr");
+                    
+                    // Gestione icone podio
+                    let rank = index + 1;
+                    if (index === 0) rank = "🥇";
+                    if (index === 1) rank = "🥈";
+                    if (index === 2) rank = "🥉";
+
+                    // Nota: usiamo le chiavi 'nome' e 'numeroMedaglie' come definito nel backend
+                    // Aggiungo controlli di fallback per sicurezza
+                    const nome = item.nome || item.atleta;
+                    const count = item.numeroMedaglie || item.count || item.medaglie;
+
+                    tr.innerHTML = `
+                        <td style="text-align: center; font-size: 1.2em;">${rank}</td>
+                        <td>${nome}</td>
+                        <td style="text-align: center; font-weight: bold;">
+                            <span style="background: #333; color: white; padding: 4px 10px; border-radius: 10px;">${count}</span>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: red;">Errore caricamento statistiche.</td></tr>';
+            });
+    }
+
+    // --- FUNZIONE PER LE MAPPE ---
+    function openMap(locationName) {
+        document.body.style.cursor = "wait";
+
+        fetch(`http://127.0.0.1:5000/api/coords?location=${encodeURIComponent(locationName)}`)
+            .then(res => res.json())
+            .then(data => {
+                document.body.style.cursor = "default";
+                
+                if (data && data.coords) {
+                    const url = `https://www.google.com/maps?q=${data.coords}&z=12`;
+                    window.open(url, '_blank');
+                } else {
+                    console.log("Dati ricevuti:", data);
+                    alert("Impossibile trovare le coordinate per " + locationName);
+                }
+            })
+            .catch(err => {
+                document.body.style.cursor = "default";
+                console.error(err);
+                alert("Errore durante la geolocalizzazione.");
+            });
+    }
+ 
     function showMessage(text, type) {
         const msgDiv = document.getElementById("insertMessage");
         msgDiv.innerText = text;
@@ -243,11 +351,11 @@
                 // === STEP 5: Mostra nome completo ===
                 if (data.fullName) {
                     document.getElementById("fullName").innerHTML = 
-                        `<strong>👤 Nome completo:</strong> ${data.fullName}`;
+                        `<strong> Nome completo:</strong> ${data.fullName}`;
                 } else {
                     // Fallback: usa il nome cercato se DBpedia non ha foaf:name
                     document.getElementById("fullName").innerHTML = 
-                        `<strong>👤 Nome completo:</strong> ${name}`;
+                        `<strong> Nome completo:</strong> ${name}`;
                 }
 
                 // === STEP 6: Mostra data di nascita formattata ===
@@ -258,7 +366,7 @@
                         year: 'numeric', month: 'long', day: 'numeric' 
                     });
                     document.getElementById("birthDate").innerHTML = 
-                        `<strong>📅 Data di nascita:</strong> ${formattedDate}`;
+                        `<strong> Data di nascita:</strong> ${formattedDate}`;
                 } else {
                     document.getElementById("birthDate").innerHTML = "";  // Nasconde se assente
                 }
@@ -268,7 +376,7 @@
                     // Estrae solo il nome del luogo dall'URI DBpedia
                     const place = data.birthPlace.split('/').pop().replace(/_/g, ' ');
                     document.getElementById("birthPlace").innerHTML = 
-                        `<strong>📍 Luogo di nascita:</strong> ${place}`;
+                        `<strong> Luogo di nascita:</strong> ${place}`;
                 } else {
                     document.getElementById("birthPlace").innerHTML = "";
                 }
@@ -278,7 +386,7 @@
                     // Formatta altezza con 2 decimali
                     const heightM = parseFloat(data.height).toFixed(2);
                     document.getElementById("height").innerHTML = 
-                        `<strong>📏 Altezza:</strong> ${heightM} m`;
+                        `<strong> Altezza:</strong> ${heightM} m`;
                 } else {
                     document.getElementById("height").innerHTML = "";
                 }
@@ -294,7 +402,7 @@
                 hideFoto();
             });
     }
-                    
+                
     /**
      * Mostra la foto dell'atleta impostando l'URL sull'elemento <img>
      * @param {string} url - URL dell'immagine da visualizzare
@@ -342,9 +450,11 @@
 
         h2 {
             color: #222;
-            margin-top: 20px;
+            margin-top: 30px;
             margin-bottom: 12px;
             font-size: 1.3em;
+            border-left: 5px solid #333;
+            padding-left: 10px;
         }
 
         .search-container {
@@ -382,16 +492,6 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
         button {
             padding: 8px 16px;
             background: #333;
@@ -407,10 +507,6 @@
 
         button:hover {
             background: #555;
-        }
-
-        button:active {
-            background: #222;
         }
 
         table {
@@ -438,47 +534,9 @@
             color: #333;
         }
 
-        tbody tr {
-            transition: background-color 0.15s;
-        }
-
         tbody tr:hover {
             background-color: #f9f9f9;
             cursor: pointer;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        #desc {
-            width: 100%;
-            height: 180px;
-            border: 1px solid #ddd;
-            padding: 12px;
-            overflow-y: auto;
-            background: white;
-            border-radius: 4px;
-            margin-top: 8px;
-            font-size: 0.9em;
-            line-height: 1.5;
-        }
-
-        #desc::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #desc::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        #desc::-webkit-scrollbar-thumb {
-            background: #999;
-            border-radius: 3px;
-        }
-
-        #desc::-webkit-scrollbar-thumb:hover {
-            background: #666;
         }
 
         #foto {
@@ -495,7 +553,7 @@
         #spinner {
             width: 35px;
             height: 35px;
-            margin-top: 12px;
+            margin: 12px auto;
             border: 3px solid #e8e8e8;
             border-top: 3px solid #333;
             border-radius: 50%;
@@ -509,31 +567,9 @@
         }
 
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-
-            h1 {
-                font-size: 1.5em;
-                margin-bottom: 15px;
-            }
-
-            .search-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            input[type="text"],
-            input[type="number"],
-            select,
-            button {
-                width: 100%;
-            }
-
-            th, td {
-                padding: 8px;
-                font-size: 0.85em;
-            }
+            body { padding: 15px; }
+            .search-container { flex-direction: column; align-items: stretch; }
+            input, select, button { width: 100%; }
         }
     </style>
     </body>
