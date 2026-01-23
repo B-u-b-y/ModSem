@@ -8,109 +8,136 @@
 
     <h1> Olimpiadi Invernali</h1>
 
-    <div class="search-container">
-        <label>Nome atleta:</label>
-        <input type="text" id="name" placeholder="Inserisci il nome...">
-
-        <label>Sport:</label>
-        <select id="sport">
-            <option value="Tutti">Tutti gli sport</option>
-            <option value="Sci Alpino">Sci Alpino</option>
-            <option value="Biathlon">Biathlon</option>
-            <option value="Snowboard">Snowboard</option>
-            <option value="Pattinaggio">Pattinaggio</option>
-            <option value="Sci di Fondo">Sci di Fondo</option>
-        </select>
-
-        <button onclick="searchAthletes()">🔍 Cerca</button>
-        <button onclick="resetSearch()">🗑️ Svuota</button>
+    <!-- TAB NAVIGATION -->
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('ricerca')">🔍 Ricerca</button>
+        <button class="tab-btn" onclick="switchTab('aggiungi')">➕ Aggiungi</button>
+        <button class="tab-btn" onclick="switchTab('medaglie')">🏆 Medaglie</button>
+        <button class="tab-btn" onclick="switchTab('mappe')">🌍 Mappe</button>
     </div>
 
-    <h2> Risultati Ricerca</h2>
+    <!-- TAB 1: RICERCA ATLETI -->
+    <div id="tab-ricerca" class="tab-content active">
+        <div class="search-container">
+            <label>Nome atleta:</label>
+            <input type="text" id="name" placeholder="Inserisci il nome...">
 
-    <table id="athletesTable">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Sport</th>
-                <th>Età</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+            <label>Sport:</label>
+            <select id="sport">
+                <option value="Tutti">Tutti gli sport</option>
+                <option value="Sci Alpino">Sci Alpino</option>
+                <option value="Biathlon">Biathlon</option>
+                <option value="Snowboard">Snowboard</option>
+                <option value="Pattinaggio">Pattinaggio</option>
+                <option value="Sci di Fondo">Sci di Fondo</option>
+            </select>
 
-    <h2>➕ Aggiungi Nuovo Atleta</h2>
-
-    <div class="search-container">
-        <label>Nome completo:</label>
-        <input type="text" id="newName" placeholder="Es. Sofia Goggia">
-
-        <label>Sport:</label>
-        <select id="newSport">
-            <option value="Sci Alpino">Sci Alpino</option>
-            <option value="Biathlon">Biathlon</option>
-            <option value="Snowboard">Snowboard</option>
-            <option value="Pattinaggio">Pattinaggio</option>
-            <option value="Sci di Fondo">Sci di Fondo</option>
-        </select>
-
-        <label>Età:</label>
-        <input type="number" id="newAge" min="15" max="60" placeholder="Es. 28">
-
-        <label>Medaglia:</label>
-        <select id="newMedal">
-            <option value="Oro">Oro</option>
-            <option value="Argento">Argento</option>
-            <option value="Bronzo">Bronzo</option>
-        </select>
-
-        <button onclick="addNewAthlete()">💾 Aggiungi Atleta</button>
-    </div>
-
-    <div id="insertMessage" style="margin-top: 10px; padding: 10px; border-radius: 4px; display: none;"></div>
-
-    
-
-    <h2>ℹ️ Dettagli Atleta da DBPEDIA</h2>
-
-    <div id="dbpedia-container" style="border: 2px solid #ddd; padding: 20px; border-radius: 10px; background-color: #fafafa;">
-        <div id="spinner"></div>
-        <div id="dbpedia-content" style="display: none;">
-            <img id="foto" alt="Foto atleta" style="max-width: 200px; border-radius: 8px; margin-bottom: 15px; display: block;">
-            <div id="fullName" style="margin-bottom: 8px;"></div>
-            <div id="birthDate" style="margin-bottom: 8px;"></div>
-            <div id="birthPlace" style="margin-bottom: 8px;"></div>
-            <div id="height" style="margin-bottom: 8px;"></div>
+            <button onclick="searchAthletes()">🔍 Cerca</button>
+            <button onclick="resetSearch()">🗑️ Svuota</button>
         </div>
-        <div id="dbpedia-message">Seleziona un atleta dalla ricerca per vedere i dettagli.</div>
+
+        <h2> Risultati Ricerca</h2>
+
+        <table id="athletesTable">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Sport</th>
+                    <th>Età</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h2>ℹ️ Dettagli Atleta da DBPEDIA</h2>
+
+        <div id="dbpedia-container" style="border: 2px solid #ddd; padding: 20px; border-radius: 10px; background-color: #fafafa;">
+            <div id="spinner"></div>
+            <div id="dbpedia-content" style="display: none;">
+                <img id="foto" alt="Foto atleta" style="max-width: 200px; border-radius: 8px; margin-bottom: 15px; display: block;">
+                <div id="fullName" style="margin-bottom: 8px;"></div>
+                <div id="birthDate" style="margin-bottom: 8px;"></div>
+                <div id="birthPlace" style="margin-bottom: 8px;"></div>
+                <div id="height" style="margin-bottom: 8px;"></div>
+            </div>
+            <div id="dbpedia-message">Seleziona un atleta dalla ricerca per vedere i dettagli.</div>
+        </div>
     </div>
 
-    <h2>🏆 Classifica Medaglie</h2>
-    
-    <div class="search-container">
-        <button onclick="loadMedalStats()" style="width: 100%; background-color: #007bff;">📊 Carica/Aggiorna Classifica</button>
+    <!-- TAB 2: AGGIUNGI ATLETA -->
+    <div id="tab-aggiungi" class="tab-content">
+        <h2>➕ Aggiungi Nuovo Atleta</h2>
+
+        <div class="search-container">
+            <label>Nome completo:</label>
+            <input type="text" id="newName" placeholder="Es. Sofia Goggia">
+
+            <label>Sport:</label>
+            <select id="newSport">
+                <option value="Sci Alpino">Sci Alpino</option>
+                <option value="Biathlon">Biathlon</option>
+                <option value="Snowboard">Snowboard</option>
+                <option value="Pattinaggio">Pattinaggio</option>
+                <option value="Sci di Fondo">Sci di Fondo</option>
+            </select>
+
+            <label>Età:</label>
+            <input type="number" id="newAge" min="15" max="60" placeholder="Es. 28">
+
+            <label>Medaglia:</label>
+            <select id="newMedal">
+                <option value="Oro">Oro</option>
+                <option value="Argento">Argento</option>
+                <option value="Bronzo">Bronzo</option>
+            </select>
+
+            <button onclick="addNewAthlete()">💾 Aggiungi Atleta</button>
+        </div>
+
+        <div id="insertMessage" style="margin-top: 10px; padding: 10px; border-radius: 4px; display: none;"></div>
     </div>
 
-    <table id="medalsTable" style="display: none;">
-        <thead>
-            <tr>
-                <th>Posizione</th>
-                <th>Atleta</th>
-                <th style="text-align: center;">Numero Medaglie</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <h2>🌍 Mappe Olimpiche (Wikidata)</h2>
-    
-    <div class="search-container" style="flex-direction: column; align-items: flex-start;">
-        <p style="margin-bottom: 15px;">
-            Luoghi caricati dinamicamente dall'Ontologia. Clicca per vedere la mappa:
-        </p>
+    <!-- TAB 3: CLASSIFICA MEDAGLIE -->
+    <div id="tab-medaglie" class="tab-content">
+        <h2>🏆 Classifica Medaglie</h2>
         
-        <div id="locationsContainer" style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <span style="color: gray;">Caricamento luoghi dal grafo...</span>
+        <div class="search-container">
+            <button onclick="loadMedalStats()" style="width: 100%; background-color: #007bff;">📊 Carica/Aggiorna Classifica</button>
+        </div>
+
+        <table id="medalsTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Posizione</th>
+                    <th>Atleta</th>
+                    <th style="text-align: center;">Numero Medaglie</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- TAB 4: MAPPE OLIMPICHE -->
+    <div id="tab-mappe" class="tab-content">
+        <h2>🌍 Mappe Olimpiche (Wikidata)</h2>
+        
+        <div class="search-container" style="flex-direction: column; align-items: flex-start;">
+            <p style="margin-bottom: 15px;">
+                Luoghi caricati dinamicamente dall'Ontologia. Clicca per vedere la mappa:
+            </p>
+            
+            <div id="locationsContainer" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span style="color: gray;">Caricamento luoghi dal grafo...</span>
+            </div>
+        </div>
+
+        <!-- Container per la mappa embedded -->
+        <div id="mapContainer" style="display: none; margin-top: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 id="mapTitle" style="margin: 0; color: #333;">📍 Mappa</h3>
+                <button onclick="closeMap()" style="background: #dc3545; padding: 5px 12px;">✖ Chiudi</button>
+            </div>
+            <iframe id="mapFrame" width="100%" height="500" style="border: 2px solid #ddd; border-radius: 5px;" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
 
@@ -121,7 +148,31 @@
     document.addEventListener("DOMContentLoaded", function() {
         // Carica le location per le mappe
         loadLocations();
+        searchAthletes(); 
     });
+
+    function switchTab(tabName) {
+        const tabs = document.querySelectorAll(".tab-content");
+        tabs.forEach(tab => {
+            tab.classList.remove("active");
+        });
+
+        const btns = document.querySelectorAll(".tab-btn");
+        btns.forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+        // Mostra il tab selezionato
+        document.getElementById("tab-" + tabName).classList.add("active");
+
+        // Evidenzia il pulsante selezionato
+        event.target.classList.add("active");
+    }
+
+    function getRandomColor() {
+        const colors = ["#3498db", "#e74c3c", "#2ecc71", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22", "#34495e"];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
 
     function resetSearch() {
         // Pulisce i campi di input
@@ -298,8 +349,20 @@
                 document.body.style.cursor = "default";
                 
                 if (data && data.coords) {
-                    const url = `https://www.google.com/maps?q=${data.coords}&z=12`;
-                    window.open(url, '_blank');
+                    // Mostra la mappa embedded
+                    const mapContainer = document.getElementById("mapContainer");
+                    const mapFrame = document.getElementById("mapFrame");
+                    const mapTitle = document.getElementById("mapTitle");
+                    
+                    // Costruisce URL per iframe embedded di Google Maps
+                    const embedUrl = `https://www.google.com/maps?q=${data.coords}&z=12&output=embed`;
+                    
+                    mapFrame.src = embedUrl;
+                    mapTitle.innerHTML = `📍 ${locationName}`;
+                    mapContainer.style.display = "block";
+                    
+                    // Scroll verso la mappa
+                    mapContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 } else {
                     console.log("Dati ricevuti:", data);
                     alert("Impossibile trovare le coordinate per " + locationName);
@@ -311,6 +374,14 @@
                 alert("Errore durante la geolocalizzazione.");
             });
     }
+
+    function closeMap() {
+        const mapContainer = document.getElementById("mapContainer");
+        const mapFrame = document.getElementById("mapFrame");
+        
+        mapContainer.style.display = "none";
+        mapFrame.src = ""; // Ferma il caricamento della mappa
+    }
  
     function loadLocations() {
         const container = document.getElementById("locationsContainer");
@@ -319,7 +390,7 @@
             .then(res => res.json())
             .then(locations => {
                 container.innerHTML = ""; 
-
+                console.log("Luoghi caricati:", locations); // Debug
                 if (locations.length === 0) {
                     container.innerHTML = "Nessun luogo trovato nel grafo.";
                     return;
@@ -504,6 +575,61 @@
             padding-left: 10px;
         }
 
+        /* TAB STYLES */
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: #333;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .search-container {
             background: white;
             padding: 18px;
@@ -616,7 +742,8 @@
         @media (max-width: 768px) {
             body { padding: 15px; }
             .search-container { flex-direction: column; align-items: stretch; }
-            input, select, button { width: 100%; }
+            .tabs-container { flex-direction: column; }
+            .tab-btn { width: 100%; }
         }
     </style>
     </body>

@@ -264,6 +264,45 @@ xsd:date a rdfs:Datatype .
     owl:equivalentClass [ a owl:Class ;
             owl:oneOf ( :Argento :Bronzo :Oro ) ] .
 
+:Torino a :Luogo ;
+    rdfs:label "Torino"@it .
+
+:Milano a :Luogo ;
+    rdfs:label "Milano"@it .
+
+:Sestriere a :Luogo ;
+    rdfs:label "Sestriere"@it .
+
+:Cortina a :Luogo ;
+    rdfs:label "Cortina d'Ampezzo"@it .
+
+:Pechino a :Luogo ;
+    rdfs:label "Pechino"@it .
+
+:Zhangjiakou a :Luogo ;
+    rdfs:label "Zhangjiakou"@it .
+
+:Yanqing a :Luogo ;
+    rdfs:label "Yanqing"@it .
+
+:GaraPattinaggio2026 a :GaraOlimpica ;
+    :siSvolgeIn :Torino .
+
+:GaraSnowboard2026 a :GaraOlimpica ;
+    :siSvolgeIn :Cortina .
+
+:GaraPattinaggio2022 a :GaraOlimpica ;
+    :siSvolgeIn :Pechino .
+
+:GaraPattinaggio2006 a :GaraOlimpica ;
+    :siSvolgeIn :Sestriere .
+
+:GaraSciAlpino2022 a :GaraOlimpica ;
+    :siSvolgeIn :Yanqing .
+
+:GaraSnowboard2022 a :GaraOlimpica ;
+    :siSvolgeIn :Zhangjiakou .
+
 :Gara a owl:Class ;
     rdfs:subClassOf :Evento .
 
