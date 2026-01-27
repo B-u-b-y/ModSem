@@ -91,6 +91,9 @@
                 <option value="Bronzo">Bronzo</option>
             </select>
 
+            <label>Anno:</label>
+            <input type="number" id="newYear" min="1900" max="2100" placeholder="Es. 2026" value="2026">
+
             <button onclick="addNewAthlete()">💾 Aggiungi Atleta</button>
         </div>
 
@@ -239,10 +242,11 @@
         const sport = document.getElementById("newSport").value;
         const eta = document.getElementById("newAge").value;
         const medaglia = document.getElementById("newMedal").value;
+        const anno = document.getElementById("newYear").value;
 
         // Validazione client-side: verifica campi obbligatori
-        if (!nome || !eta) {
-            showMessage("Compila tutti i campi obbligatori (Nome e Età)", "error");
+        if (!nome || !eta || !anno) {
+            showMessage("Compila tutti i campi obbligatori (Nome, Età e Anno)", "error");
             return;
         }
 
@@ -251,7 +255,8 @@
             nome: nome,
             sport: sport,
             eta: parseInt(eta),  // Converte stringa in intero
-            medaglia: medaglia
+            medaglia: medaglia,
+            anno: parseInt(anno)  // Converte stringa in intero
         };
 
         // Esegue chiamata POST al backend con header JSON

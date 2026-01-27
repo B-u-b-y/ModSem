@@ -81,18 +81,19 @@ def add_athlete():
     data = request.get_json()
     
     # Validazione: verifica che tutti i campi obbligatori siano presenti
-    if not data or "nome" not in data or "sport" not in data or "eta" not in data:
-        return jsonify({"error": "Parametri mancanti. Richiesti: nome, sport, eta"}), 400
+    if not data or "nome" not in data or "sport" not in data or "eta" not in data or "anno" not in data:
+        return jsonify({"error": "Parametri mancanti. Richiesti: nome, sport, eta, anno"}), 400
     
     # Estrazione dei dati dal payload JSON
     nome = data.get("nome")
     sport = data.get("sport")
     eta = int(data.get("eta"))  # Conversione a intero
     medaglia = data.get("medaglia", "Oro")  # Medaglia opzionale (default: Oro)
+    anno = int(data.get("anno"))  # Anno della medaglia
     
     # Delega l'inserimento al backend che esegue SPARQL INSERT DATA
     # Il metodo add_athlete() crea un nuovo individuo nell'ontologia RDF
-    success = backend.add_athlete(nome, sport, eta, medaglia)
+    success = backend.add_athlete(nome, sport, eta, medaglia, anno)
     
     # Ritorna il risultato al client
     if success:

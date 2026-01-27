@@ -99,16 +99,17 @@ class SemanticBackend:
         # Esegue la query sul grafo RDF e ritorna i risultati
         return self.g.query(query)
 
-    def add_athlete(self, nome, sport, eta, medaglia="Oro"):
+    def add_athlete(self, nome, sport, eta, medaglia, anno):
         """
         Inserisce un nuovo atleta nell'ontologia usando SPARQL UPDATE (INSERT DATA).
         
         Questo metodo:
         1. Genera un URI univoco per il nuovo atleta (sanitizzando il nome)
         2. Mappa il nome dello sport leggibile all'URI della risorsa sport
-        3. Costruisce ed esegue una query SPARQL INSERT DATA
-        4. Aggiunge le triple RDF al grafo in memoria
-        5. Serializza il grafo aggiornato su file .ttl (persistenza)
+        3. Crea una nuova risorsa Medaglia con tutte le sue proprietà
+        4. Costruisce ed esegue una query SPARQL INSERT DATA
+        5. Aggiunge le triple RDF al grafo in memoria
+        6. Serializza il grafo aggiornato su file .ttl (persistenza)
         
         Args:
             nome (str): Nome completo dell'atleta (es. "Sofia Goggia")
@@ -118,17 +119,20 @@ class SemanticBackend:
             eta (int): Età dell'atleta (numero intero)
             medaglia (str): Tipo di medaglia vinta ("Oro", "Argento", "Bronzo")
                            Default: "Oro"
+            anno (int): Anno della medaglia (es. 2026). Se None, usa anno corrente
         
         Returns:
             bool: True se l'inserimento ha successo e il file è stato salvato,
                   False in caso di errore
         
         Example:
-            >>> backend.add_athlete("Sofia Goggia", "Sci Alpino", 33, "Oro")
+            >>> backend.add_athlete("Sofia Goggia", "Sci Alpino", 33, "Oro", 2026)
             Atleta Sofia Goggia aggiunto con successo! Triple totali: 246
             True
         """
         try:
+            import datetime
+            
             # ===== STEP 1: Generazione URI Atleta =====
             # Rimuove spazi e caratteri speciali per creare un identificatore valido
             # Esempio: "Sofia Goggia" -> "SofiaGoggia"
@@ -136,7 +140,7 @@ class SemanticBackend:
                             .replace("à", "a").replace("è", "e") \
                             .replace("ì", "i").replace("ò", "o").replace("ù", "u")
             
-            # ===== STEP 2: Mapping Sport -> URI =====
+            # ===== STEP 2: Mapping Sport -> URI e Gara =====
             # Mappa i nomi leggibili degli sport agli URI delle risorse nell'ontologia
             sport_map = {
                 "Sci Alpino": "SciAlpinoSport",
@@ -147,14 +151,37 @@ class SemanticBackend:
             }
             sport_uri = sport_map.get(sport, "SciAlpinoSport")  # Default: Sci Alpino
             
-            # ===== STEP 3: Query SPARQL INSERT DATA =====
-            # Crea una nuova istanza di atleta con tutte le sue proprietà
+            # Mappa sport a gare (usa anno corrente 2026)
+            gara_map = {
+                "Sci Alpino": "GaraSciAlpino2022",
+                "Sci di Fondo": "GaraSciDiFondo2022",
+                "Snowboard": "GaraSnowboard2026",
+                "Pattinaggio": "GaraPattinaggio2026",
+                "Biathlon": "GaraBiathlon2026"
+            }
+            gara_uri = gara_map.get(sport, "GaraSciAlpino2022")
+            
+            # ===== STEP 3: Generazione URI Medaglia =====
+            # Crea un ID univoco per la medaglia: Medaglia<Tipo><Sport><Anno>
+            # Esempio: MedagliaOroSciAlpino2026_SofiaGoggia
+            # Usa l'anno fornito dall'utente, oppure l'anno corrente se non specificato
+            anno_medaglia = anno if anno is not None else datetime.datetime.now().year
+            sport_name = sport.replace(" ", "")
+            medaglia_id = f"Medaglia{medaglia}{sport_name}{anno_medaglia}"
+            
+            # Etichetta leggibile per la medaglia
+            medaglia_label = f"Medaglia di {medaglia.lower()} {sport} {anno_medaglia}"
+            
+            # ===== STEP 4: Query SPARQL INSERT DATA =====
+            # Crea una nuova istanza di atleta E la relativa medaglia
             query = """
             PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX owl: <http://www.w3.org/2002/07/owl#>
             
             INSERT DATA {
+                # ========== ATLETA ==========
                 # L'atleta è un individuo nominato appartenente a 3 classi
                 :%s rdf:type owl:NamedIndividual ,
                              :AtletaOlimpico ,      # Atleta che partecipa a gare olimpiche
@@ -171,8 +198,23 @@ class SemanticBackend:
                         
                         # Proprietà data: età come literal intero
                         :haEta %d .
+                
+                # ========== MEDAGLIA ==========
+                # Crea la risorsa medaglia con tutte le sue proprietà
+                :%s rdf:type owl:NamedIndividual ,
+                             :Medaglia ;
+                        
+                        # Etichetta leggibile della medaglia
+                        rdfs:label "%s"@it ;
+                        
+                        # Tipo di medaglia (Oro, Argento, Bronzo)
+                        :haTipo :%s ;
+                        
+                        # Gara in cui è stata assegnata
+                        :assegnataInGara :%s .
             }
-            """ % (athlete_id, nome, sport_uri, medaglia, eta)
+            """ % (athlete_id, nome, sport_uri, medaglia_id, eta,
+                   medaglia_id, medaglia_label, medaglia, gara_uri)
             
             # ===== STEP 4: Esecuzione UPDATE =====
             # Modifica il grafo RDF in memoria aggiungendo le nuove triple
@@ -316,7 +358,8 @@ class SemanticBackend:
         sparql.setReturnFormat(JSON)
         
         # Header User-Agent necessario per evitare rate limiting di Wikidata
-        sparql.addCustomHttpHeader("User-Agent", "Mozilla/5.0 (StudentProject/1.0)")
+        # Formato raccomandato: ApplicationName/Version (contact info)
+        sparql.addCustomHttpHeader("User-Agent", "OlimpiadiInvernaliApp/1.0 (Educational Project; Python/rdflib)")
         
         try:
             # Esegue la query remota
