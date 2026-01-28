@@ -30,12 +30,12 @@ ORDER BY DESC(?numeroMedaglie)
 TERZA QUERY
 
 
-PREFIX : <http://www.semanticweb.org/ModSem/SportInvernaliOlimpici/>
-
-SELECT DISTINCT ?nomeAtleta
+PREFIX : < http :// www . semanticweb . org / ModSem /SportInvernaliOlimpici / >
+SELECT DISTINCT ? nomeAtleta
 WHERE {
-    ?atleta :vinceMedaglia :Oro ;
-            :haNome ?nomeAtleta .
+    ? atleta : vinceMedaglia ? medaglia ;
+        : haNome ? nomeAtleta .
+    ? medaglia : haTipo : Oro .
 }
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
