@@ -1,6 +1,11 @@
-EventID;Date;Athlete;Age;Sport;Medal
-MensDownhill;06/02/2026;Dominik Paris;36;AlpineSki;Gold
-WomensBiathlon;08/02/2026;Dorothea Wierer;35;Biathlon;Silver
-SnowboardHalfpipe;10/02/2026;Scotty James;31;Snowboard;Bronze
-MensSlalom;12/02/2026;Clement Noel;28;AlpineSki;Gold
-CrossCountry15km;14/02/2026;Johannes Klaebo;29;CrossCountry;Silver
+ID;Nome;Eta;Punteggio;Sport_Praticato;Gara_ID;Data_Gara;Luogo_Gara;Medaglia_Tipo
+1;Anja Pärson;45;75;SciAlpino;GaraSciAlpino2022;10/02/2022;Yanqing;Oro
+2;Federica Brignone;32;85;SciAlpino;GaraSciAlpino2022;10/02/2022;Yanqing;Argento
+3;Johannes Strolz;34;96;SciAlpino;GaraSciAlpino2022;10/02/2022;Yanqing;NULL
+4;Lindsey Jacobelli;41;66;Snowboard;GaraSnowboard2022;;Zhangjiakou;Oro
+5;Lindsey Vonn;41;86;SciAlpino;GaraSciAlpino2022;10/02/2022;Yanqing;Bronzo
+6;Marcel Hirscher;35;35;SciAlpino;GaraSciAlpino2022;10/02/2022;Yanqing;NULL
+7;Nathan Chen;27;58;Pattinaggio;GaraPattinaggio2022;12/02/2022;Pechino;NULL
+8;Nathan Chen;27;58;Pattinaggio;GaraPattinaggio2026;;Torino;Oro
+9;Sofia Goggia;33;92;Pattinaggio;GaraSciAlpino2022;10/02/2022;Yanqing;Bronzo
+10;Yiming Su;22;86;Snowboard;GaraSnowboard2026;;Cortina d'Ampezzo;Bronzo
