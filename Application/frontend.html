@@ -446,23 +446,23 @@
     }
 
     function loadDbpedia(name) {
-        // === STEP 1: Mostra spinner durante il caricamento ===
+        // === Mostra spinner durante il caricamento ===
         document.getElementById("spinner").style.display = "block";
         document.getElementById("dbpedia-content").style.display = "none";
         document.getElementById("dbpedia-message").innerText = "Caricamento in corso...";
         document.getElementById("dbpedia-message").style.display = "block";
 
-        // === STEP 2: Chiama l'endpoint backend che interroga DBpedia ===
+        // === Chiama l'endpoint backend che interroga DBpedia ===
         fetch(`http://127.0.0.1:5000/api/dbpedia?athlete=${encodeURIComponent(name)}`)
             .then(res => res.json())
             .then(data => {
-                // === STEP 3: Nascondi spinner e messaggio di caricamento ===
+                // === Nascondi spinner e messaggio di caricamento ===
                 document.getElementById("spinner").style.display = "none";
                 document.getElementById("dbpedia-message").style.display = "none";
                 document.getElementById("dbpedia-content").style.display = "block";
                 console.log(data);  // Debug: mostra dati in console
                 
-                // === STEP 4: Mostra foto se disponibile ===
+                // === Mostra foto se disponibile ===
                 const fotoImg = document.getElementById("foto");
                 if (data.foto) {
                     fotoImg.src = data.foto;  // Imposta URL immagine
@@ -471,7 +471,7 @@
                     fotoImg.style.display = "none";  // Nasconde se non disponibile
                 }
 
-                // === STEP 5: Mostra nome completo ===
+                // === Mostra nome completo ===
                 if (data.fullName) {
                     document.getElementById("fullName").innerHTML = 
                         `<strong> Nome completo:</strong> ${data.fullName}`;
@@ -481,7 +481,7 @@
                         `<strong> Nome completo:</strong> ${name}`;
                 }
 
-                // === STEP 6: Mostra data di nascita formattata ===
+                // === Mostra data di nascita formattata ===
                 if (data.birthDate) {
                     // Converte ISO date in formato italiano leggibile
                     const date = new Date(data.birthDate);
@@ -494,7 +494,7 @@
                     document.getElementById("birthDate").innerHTML = "";  // Nasconde se assente
                 }
 
-                // === STEP 7: Mostra luogo di nascita ===
+                // === Mostra luogo di nascita ===
                 if (data.birthPlace) {
                     // Estrae solo il nome del luogo dall'URI DBpedia
                     const place = data.birthPlace.split('/').pop().replace(/_/g, ' ');
@@ -504,7 +504,7 @@
                     document.getElementById("birthPlace").innerHTML = "";
                 }
 
-                // === STEP 8: Mostra altezza ===
+                // === Mostra altezza ===
                 if (data.height) {
                     // Formatta altezza con 2 decimali
                     const heightM = parseFloat(data.height).toFixed(2);

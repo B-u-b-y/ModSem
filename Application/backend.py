@@ -168,6 +168,15 @@ def get_coords():
     return jsonify({"coords": coords})
 
 
+# ============================================================================
+# ENDPOINT 6: Elenco Località (GET)
+# ============================================================================
+# Metodo: GET
+# URL: /api/locations
+# Parametri: nessuno
+# Ritorna: Array JSON di località disponibili nell'ontologia
+#          Esempio: ["Cortina d'Ampezzo", "Bormio", "Anterselva", ...]
+# ============================================================================
 @app.route('/api/locations', methods=['GET'])
 def get_locations_api():
     try:
